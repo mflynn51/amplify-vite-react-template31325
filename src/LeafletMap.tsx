@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -12,6 +12,7 @@ interface LeafletMapProps {
 const LeafletMap: React.FC<LeafletMapProps> = ({ center, zoom, circleCenter, circleRadius }) => {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const [markers, setMarkers] = useState<L.CircleMarker[]>([]);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -22,7 +23,19 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ center, zoom, circleCenter, cir
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapRef.current);
 
-    
+    const handleClick = (e: L.LeafletMouseEvent) => {
+        const { latlng } = e;
+        const newMarker = L.circleMarker(latlng, {
+          color: 'blue',
+          radius: 5,
+        });
+  
+        setMarkers((prevMarkers) => [...prevMarkers, newMarker]);
+        newMarker.addTo(mapRef.current!); // Non-null assertion is safe here
+  
+      };
+  
+      mapRef.current.on('click', handleClick);
 
     // Add circle if circleCenter and circleRadius are provided
     if (circleCenter && circleRadius) {
@@ -34,16 +47,22 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ center, zoom, circleCenter, cir
 
     return () => {
       if (mapRef.current) {
+        mapRef.current.off('click', handleClick);
         mapRef.current.remove();
       }
     };
   }, [center, zoom, circleCenter, circleRadius]);
 
-  useEffect(() => {
+  useEffect(()=>{
     if(mapRef.current){
-      mapRef.current.setView(center, zoom);
+      markers.forEach(marker=>marker.addTo(mapRef.current!));
     }
-  },[center, zoom]);
+    return ()=>{
+      if(mapRef.current){
+        markers.forEach(marker=>mapRef.current!.removeLayer(marker));
+      }
+    }
+  }, [markers]);
 
   return <div ref={mapContainerRef} style={{ height: '500px', width: '100%' }} />;
 };
