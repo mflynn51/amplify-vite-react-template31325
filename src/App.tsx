@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import LeafletMap from './LeafletMap';
+
 
 const client = generateClient<Schema>();
 
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  const mapCenter: [number, number] = [51.505, -0.09]; // London
+  const mapZoom = 13;
 
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -32,6 +36,9 @@ function App() {
         <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
           Review next step of this tutorial.
         </a>
+        <div className="App">
+          <LeafletMap center={mapCenter} zoom={mapZoom} />
+        </div>
       </div>
     </main>
   );
