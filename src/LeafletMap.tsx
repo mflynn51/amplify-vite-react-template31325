@@ -22,6 +22,8 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ center, zoom, circleCenter, cir
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapRef.current);
 
+    L.geoJson(statesData).addTo(mapRef.current);
+
     // Add circle if circleCenter and circleRadius are provided
     if (circleCenter && circleRadius) {
       L.circle(circleCenter, {

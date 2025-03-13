@@ -8,9 +8,9 @@ const client = generateClient<Schema>();
 
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const mapCenter: [number, number] = [51.505, -0.09]; // London
+  const mapCenter: [number, number] = [34, -118]; // LA
   const mapZoom = 13;
-  const circleCenter: [number, number] = [51.505, -0.12]; // Example circle center
+  const circleCenter: [number, number] = [34, -118]; // Example circle center
   const circleRadius = 500; // Example circle radius (meters)
 
 
